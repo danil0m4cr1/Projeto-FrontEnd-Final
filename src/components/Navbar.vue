@@ -11,7 +11,7 @@
                         to="/" 
                         class="border-b-2 border-transparent hover:border-b-2 hover:border-white transition duration-200">
                         Home
-                    </router-link>
+                        </router-link>
                     </li>
                     <li class="cursor-pointer">
                         <router-link 
@@ -25,7 +25,7 @@
                         to="/contato"
                         class="border-b-2 border-transparent hover:border-b-2 hover:border-white transition duration-200">
                         Contato
-                    </router-link>
+                        </router-link>
                     </li>
                 </ul>
             </div>
