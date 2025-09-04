@@ -27,6 +27,13 @@
                         Contato
                         </router-link>
                     </li>
+                    <li class="cursor-pointer">
+                        <router-link 
+                        to="/login"
+                        class="border-b-2 border-transparent hover:border-b-2 hover:border-white transition duration-200">
+                        Login
+                        </router-link>
+                    </li>
                 </ul>
             </div>
         </div>
