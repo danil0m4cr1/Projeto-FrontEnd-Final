@@ -29,6 +29,13 @@
                     </li>
                     <li class="cursor-pointer">
                         <router-link 
+                        v-if="store.name != '' && store.email != ''"
+                        to="/perfil"
+                        class="border-b-2 border-transparent hover:border-b-2 hover:border-white transition duration-200">
+                        Perfil
+                        </router-link>
+                        <router-link 
+                        v-else
                         to="/login"
                         class="border-b-2 border-transparent hover:border-b-2 hover:border-white transition duration-200">
                         Login
@@ -40,8 +47,25 @@
     </div>
 </template>
 
+<script setup>
+import { useUsuarioStore } from '../stores/usuario';
+const store = useUsuarioStore();
+
+let logged;
+let url;
+
+if(store.name == ""){
+    logged = "Login"
+    url = "/login"
+} else {
+    logged = "Perfil"
+    url = "/perfil"
+}
+</script>
+
 <script>
-export default{
+export default {
     name: "Navbar"
 }
+
 </script>
