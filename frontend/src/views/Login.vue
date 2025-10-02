@@ -11,7 +11,6 @@
                         v-if="status.pName == false"
                         class="text-red-600 text-[18px]"
                         >Digite um nome válido</p>
-                        <p v-else></p>
                     </div>
                     <div class="flex flex-col py-4 w-[80%]">
                         <label for="email" class="text-white py-1 text-[21px]">Email:</label>
@@ -20,13 +19,22 @@
                         v-if="status.pEmail == false"
                         class="text-red-600 text-[18px]"
                         >Digite um email válido</p>
-                        <p v-else></p>
+                    </div>
+                    <div>
+                        <p class="hidden" id="user-err">Esse usuário não está cadastrado</p>
                     </div>
                     <input 
                     type="submit" 
                     value="Logar" 
-                    class="bg-[#e9f5f9] w-[200px] h-[38px] font-bold rounded-2xl text-center cursor-pointer hover:bg-blue-200 max-sm:w-[100%] my-5"
+                    class="bg-[#e9f5f9] w-[200px] h-[38px] font-bold rounded-2xl text-center cursor-pointer hover:bg-blue-200 max-sm:w-[100%] mt-5"
                     >
+                    <p class="text-white p-y cursor-pointer mb-4 mt-1 hover:text-[#bebfbf]">
+                        <router-link 
+                        to="/cadastro"
+                        >
+                        Não tem uma conta? Cadastre-se
+                        </router-link>
+                    </p>
                 </form>
                 <div>
                     <p class="text-center text-white text-[18px]">Ou</p>
@@ -51,19 +59,17 @@
 </template>
 
 <script setup>
-import { useUsuarioStore } from '../stores/usuario';
+import { useUserStore } from '../stores/usuario';
 import { useStatusStore } from '../stores/status';
 import { useRouter } from 'vue-router';
-import {googleIntegration } from '../../server/utils/integration';
+import api from '../services/api';
 
-const store = useUsuarioStore();
+const store = useUserStore();
 const status = useStatusStore();
 const router = useRouter();
 
 let nameInput;
 let emailInput;
-
-window.googleIntegration = googleIntegration;
 
 function validName(nameInput){
     const nameRegex = /^[A-Za-z]+\s?[A-Za-z]+\s?[A-Za-z]+\s?[A-Za-z]+\s?[A-Za-z]+\s?[A-Za-z]+$/;
@@ -87,11 +93,23 @@ function redirect(){
     router.push('/perfil')
 }
 
-function submitForm(){
+async function checkEmailExists(email){
+    try {
+        const response = await api.post("/users/check-email", { email });
+        return response.data.exists;
+    } catch(error) {
+        console.error("Erro ao verificar usuário", error);
+        return false;
+    }
+}
+
+async function submitForm(){
     const nameValidation = validName(nameInput);
     const emailValidation = validEmail(emailInput);
 
-    if(nameValidation && emailValidation){
+    const userExists = await checkEmailExists(emailInput);
+
+    if(nameValidation && emailValidation && userExists){
         store.setNewName(nameInput);
         store.setNewEmail(emailInput);
         status.setStatusPName(true);
@@ -100,6 +118,7 @@ function submitForm(){
     } else {
         const inputName = document.getElementById('name');
         const inputEmail = document.getElementById('email');
+        const generalErr = document.getElementById('user-err');
 
         if(nameValidation == false){
             status.setStatusPName(false);
@@ -115,10 +134,21 @@ function submitForm(){
             status.setStatusPEmail(true);
             inputEmail.classList.remove('err-msg');
         }
+        if(userExists == false){
+            generalErr.classList.add('general-err');
+            generalErr.classList.remove('hidden');
+        } else {
+            generalErr.classList.add('hidden');
+            generalErr.classList.remove('general-err');
+        }
     }
 }
 </script>
 
 <style scoped>
 .err-msg {border: 2px solid red;}
+
+.general-err {color: red; font-weight: bold; display: block;}
+
+.hidden {display: none;}
 </style>

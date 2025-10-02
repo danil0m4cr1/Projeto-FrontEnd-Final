@@ -23,12 +23,13 @@
 </template>
 
 <script setup>
-import { useUsuarioStore } from '../stores/usuario';
-const store = useUsuarioStore();
+import { useUserStore } from '../stores/usuario';
+const store = useUserStore();
 
 function Logout(){
     store.setNewName("");
     store.setNewEmail("");
+    store.setNewPass("");
 }
 
 </script>

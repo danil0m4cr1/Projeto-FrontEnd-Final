@@ -48,8 +48,8 @@
 </template>
 
 <script setup>
-import { useUsuarioStore } from '../stores/usuario';
-const store = useUsuarioStore();
+import { useUserStore } from '../stores/usuario';
+const store = useUserStore();
 
 let logged;
 let url;

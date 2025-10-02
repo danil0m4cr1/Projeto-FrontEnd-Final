@@ -3,7 +3,8 @@ import { defineStore } from "pinia";
 export const useStatusStore = defineStore('status', {
     state: () => ({
         pName: true,
-        pEmail: true
+        pEmail: true,
+        pPass: true
     }),
     actions: {
         setStatusPName(newStatus){
@@ -11,6 +12,9 @@ export const useStatusStore = defineStore('status', {
         },
         setStatusPEmail(newStatus){
             this.pEmail = newStatus;
+        },
+        setStatusPPass(newStatus){
+            this.pPass = newStatus;
         }
     }
 })
