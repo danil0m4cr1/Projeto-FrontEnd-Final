@@ -14,3 +14,6 @@ Na aula 4) Desenvolvi o Front-End de algumas páginas da aplicação
 Na aula 5) Utilizei a biblioteca Pinia, para armazenar variáveis e conseguir trabalhar com ela em mais de uma página, tornando o código mais facilitado e legível.
 
 Na aula 6) Foi finalizado a página de login e perfil, utilizando variáveis com o pinia e utilizando os recursos condicionais do Vue
+
+Na aula 9) Foi desenvolvido a consulta ao banco de dados a partir da tela de login, garantindo que apenas usuários já existentes possam realizar o login. E a página de 
+cadastro foi criada, porém faltou a implementação com o BD
