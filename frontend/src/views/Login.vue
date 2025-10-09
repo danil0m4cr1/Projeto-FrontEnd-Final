@@ -5,20 +5,12 @@
             <div class="w-[700px] bg-blue-900 p-10 text-center">
                 <form @submit.prevent="submitForm" class="flex flex-col items-center">
                     <div class="flex flex-col py-4 w-[80%]">
-                        <label for="name" class="text-white py-1 text-[21px]">Nome Completo:</label>
-                        <input type="text" name="name" id="name" v-model="nameInput" required class="w-[100%] h-[38px] bg-white outline-0 px-3 text-[19px] rounded-2xl">
-                        <p 
-                        v-if="status.pName == false"
-                        class="text-red-600 text-[18px]"
-                        >Digite um nome válido</p>
-                    </div>
-                    <div class="flex flex-col py-4 w-[80%]">
                         <label for="email" class="text-white py-1 text-[21px]">Email:</label>
                         <input type="email" name="email" id="email" v-model="emailInput" required class="w-[100%] h-[38px] bg-white outline-0 px-3 text-[19px] rounded-2xl">
-                        <p 
-                        v-if="status.pEmail == false"
-                        class="text-red-600 text-[18px]"
-                        >Digite um email válido</p>
+                    </div>
+                    <div class="flex flex-col py-4 w-[80%]">
+                        <label for="pass" class="text-white py-1 text-[21px]">Senha:</label>
+                        <input type="password" name="pass" id="pass" v-model="passInput" required class="w-[100%] h-[38px] bg-white outline-0 px-3 text-[19px] rounded-2xl">
                     </div>
                     <div>
                         <p class="hidden" id="user-err">Esse usuário não está cadastrado</p>
@@ -59,44 +51,27 @@
 </template>
 
 <script setup>
-import { useUserStore } from '../stores/usuario';
-import { useStatusStore } from '../stores/status';
 import { useRouter } from 'vue-router';
 import api from '../services/api';
+import { useUserStore } from '../stores/usuario';
 
-const store = useUserStore();
-const status = useStatusStore();
 const router = useRouter();
 
-let nameInput;
 let emailInput;
+let passInput;
 
-function validName(nameInput){
-    const nameRegex = /^[A-Za-z]+\s?[A-Za-z]+\s?[A-Za-z]+\s?[A-Za-z]+\s?[A-Za-z]+\s?[A-Za-z]+$/;
-    if (!nameRegex.test(nameInput)) {
-        return false;
-    } else {
-        return true;
-    }
-}
-
-function validEmail(emailInput){
-    const emailRegex = /^[a-zA-Z0-9.-_]+[@][a-zA-Z]+[.][a-zA-Z]+$/;
-    if (!emailRegex.test(emailInput)) {
-        return false;   
-    } else {
-        return true;
-    }
-}
+const usuario = useUserStore();
 
 function redirect(){
-    router.push('/perfil')
+    router.push('/perfil');
 }
 
-async function checkEmailExists(email){
+async function checkEmailExists(email, pass){
     try {
-        const response = await api.post("/users/check-email", { email });
-        return response.data.exists;
+        const response = await api.post("/users/check-user", { email, pass });
+        const exists = response.data.exists;
+        const name = response.data.name;
+        return {exists, name};
     } catch(error) {
         console.error("Erro ao verificar usuário", error);
         return false;
@@ -104,37 +79,16 @@ async function checkEmailExists(email){
 }
 
 async function submitForm(){
-    const nameValidation = validName(nameInput);
-    const emailValidation = validEmail(emailInput);
+    const userExists = await checkEmailExists(emailInput, passInput);
 
-    const userExists = await checkEmailExists(emailInput);
-
-    if(nameValidation && emailValidation && userExists){
-        store.setNewName(nameInput);
-        store.setNewEmail(emailInput);
-        status.setStatusPName(true);
-        status.setStatusPEmail(true);
+    if(userExists.exists){
+        usuario.setNewEmail(emailInput);
+        usuario.setNewName(userExists.name);
         redirect();
     } else {
-        const inputName = document.getElementById('name');
-        const inputEmail = document.getElementById('email');
         const generalErr = document.getElementById('user-err');
 
-        if(nameValidation == false){
-            status.setStatusPName(false);
-            inputName.classList.add('err-msg');
-        } else {
-            status.setStatusPName(true);
-            inputName.classList.remove('err-msg');
-        }
-        if(emailValidation == false){
-            status.setStatusPEmail(false);
-            inputEmail.classList.add('err-msg');
-        } else {
-            status.setStatusPEmail(true);
-            inputEmail.classList.remove('err-msg');
-        }
-        if(userExists == false){
+        if(userExists == false || passExists == false){
             generalErr.classList.add('general-err');
             generalErr.classList.remove('hidden');
         } else {
@@ -146,8 +100,6 @@ async function submitForm(){
 </script>
 
 <style scoped>
-.err-msg {border: 2px solid red;}
-
 .general-err {color: red; font-weight: bold; display: block;}
 
 .hidden {display: none;}

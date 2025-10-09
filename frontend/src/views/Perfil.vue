@@ -1,7 +1,7 @@
 <template>
     <section class="w-full min-h-[calc(100vh-143px)]">
         <div class="w-[80%] items-center justify-center mx-auto flex flex-col relative">
-            <div v-if="store.name != null && store.email != null && store.name != '' && store.email != ''">
+            <div v-if="store.email != null && store.email != ''">
                 <h1
                 class="text-3xl text-center my-15">
                 Seja bem vindo de volta, <br><b>{{store.name}}</b></h1>

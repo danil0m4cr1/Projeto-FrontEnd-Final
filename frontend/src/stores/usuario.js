@@ -29,25 +29,6 @@ export const useUserStore = defineStore("user", { // Criando um store
       } catch (e) {
         this.error = e?.response?.data?.error || "Erro ao criar usuário";
       }
-    },
-    async updateUser(id, payload) { // Req de atualização de user
-      this.error = null;
-      try {
-        const res = await api.put(`/users/${id}`, payload);
-        const idx = this.users.findIndex(u => u._id === id);
-        if (idx !== -1) this.users[idx] = res.data;
-      } catch (e) {
-        this.error = e?.response?.data?.error || "Erro ao atualizar usuário";
-      }
-    },
-    async removeUser(id) { // Req de remoção de user
-      this.error = null;
-      try {
-        await api.delete(`/users/${id}`);
-        this.users = this.users.filter(u => u._id !== id);
-      } catch (e) {
-        this.error = e?.response?.data?.error || "Erro ao remover usuário";
-      }
     }
   }
 });

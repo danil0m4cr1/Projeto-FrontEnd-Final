@@ -33,7 +33,13 @@
                     value="Cadastrar" 
                     class="bg-[#e9f5f9] w-[200px] h-[38px] font-bold rounded-2xl text-center cursor-pointer hover:bg-blue-200 max-sm:w-[100%] mt-5"
                     >
-                    <p class="text-white p-y cursor-pointer mb-4 mt-1 hover:text-[#bebfbf]">Já tem conta? Logue agora</p>
+                    <p class="text-white p-y cursor-pointer mb-4 mt-1 hover:text-[#bebfbf]">
+                        <router-link 
+                        to="/login"
+                        >
+                        Já tem conta? Logue agora
+                        </router-link>
+                    </p>
                 </form>
                 <div>
                     <p class="text-center text-white text-[18px]">Ou</p>
@@ -61,14 +67,16 @@
 import { useUserStore } from '../stores/usuario';
 import { useStatusStore } from '../stores/status';
 import { useRouter } from 'vue-router';
+import api from '../services/api';
+import { ref } from 'vue';
 
 const store = useUserStore();
 const status = useStatusStore();
 const router = useRouter();
 
-let nameInput;
-let emailInput;
-let passInput;
+let nameInput = ref('');
+let emailInput = ref('');
+let passInput = ref('');
 
 function validName(nameInput){
     const nameRegex = /^[A-Za-z]+\s?[A-Za-z]+\s?[A-Za-z]+\s?[A-Za-z]+\s?[A-Za-z]+\s?[A-Za-z]+$/;
@@ -101,20 +109,33 @@ function redirect(){
     router.push('/perfil')
 }
 
-async function submitForm(){
-    const nameValidation = validName(nameInput);
-    const emailValidation = validEmail(emailInput);
-    const passValidation = validPass(passInput);
+async function createAccount(name, email, pass){
+    try {
+        const response = await api.post("/users", { name, email, pass });
+        const nameFront = response.data.name;
+        const emailFront = response.data.email;
+        return {nameFront, emailFront};
+    } catch(error) {
+        console.error("Erro ao criar usuário", error);
+        return false;
+    }
+}
 
+async function submitForm(){
+    const nameValidation = validName(nameInput.value);
+    const emailValidation = validEmail(emailInput.value);
+    const passValidation = validPass(passInput.value);
 
     if(nameValidation && emailValidation && passValidation){
-        store.setNewName(nameInput);
-        store.setNewEmail(emailInput);
-        store.setNewPass(passInput);
+        store.setNewName(nameInput.value);
+        store.setNewEmail(emailInput.value);
+
         status.setStatusPName(true);
         status.setStatusPEmail(true);
-        status.setStatusPPass(true);
-        redirect();
+
+        console.log(nameInput.value, emailInput.value, passInput.value)
+
+        await createAccount(nameInput.value, emailInput.value, passInput.value);
     } else {
         const inputName = document.getElementById('name');
         const inputEmail = document.getElementById('email');
