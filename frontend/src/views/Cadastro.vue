@@ -1,10 +1,10 @@
 <template>
-    <section class="w-full min-h-[calc(100vh-143px)] flex justify-center">
+    <section class="w-full min-h-[calc(100vh-143px)] flex justify-center max-sm:mb-10">
         <div class="w-[80%] items-center justify-center mx-auto flex flex-col">
             <h1 class="text-3xl py-5 font-bold">Cadastre-se</h1>
-            <div class="w-[700px] bg-blue-900 p-10 text-center">
+            <div class="w-[700px] bg-blue-900 p-10 text-center max-md:w-[100%]">
                 <form @submit.prevent="submitForm" class="flex flex-col items-center">
-                    <div class="flex flex-col py-4 w-[80%]">
+                    <div class="flex flex-col py-2 w-[80%]">
                         <label for="name" class="text-white py-1 text-[21px]">Nome Completo:</label>
                         <input type="text" name="name" id="name" v-model="nameInput" required class="w-[100%] h-[38px] bg-white outline-0 px-3 text-[19px] rounded-2xl">
                         <p 
@@ -12,7 +12,7 @@
                         class="text-red-600 text-[18px]"
                         >Digite um nome válido</p>
                     </div>
-                    <div class="flex flex-col py-4 w-[80%]">
+                    <div class="flex flex-col py-2 w-[80%]">
                         <label for="email" class="text-white py-1 text-[21px]">Email:</label>
                         <input type="email" name="email" id="email" v-model="emailInput" required class="w-[100%] h-[38px] bg-white outline-0 px-3 text-[19px] rounded-2xl">
                         <p 
@@ -20,7 +20,7 @@
                         class="text-red-600 text-[18px]"
                         >Digite um email válido</p>
                     </div>
-                    <div class="flex flex-col py-4 w-[80%]">
+                    <div class="flex flex-col py-2 w-[80%]">
                         <label for="pass" class="text-white py-1 text-[21px]">Senha:</label>
                         <input type="password" name="pass" id="pass" v-model="passInput" required class="w-[100%] h-[38px] bg-white outline-0 px-3 text-[19px] rounded-2xl">
                         <p 
@@ -133,9 +133,8 @@ async function submitForm(){
         status.setStatusPName(true);
         status.setStatusPEmail(true);
 
-        console.log(nameInput.value, emailInput.value, passInput.value)
-
         await createAccount(nameInput.value, emailInput.value, passInput.value);
+        redirect();
     } else {
         const inputName = document.getElementById('name');
         const inputEmail = document.getElementById('email');

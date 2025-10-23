@@ -1,15 +1,34 @@
 import mongoose from "mongoose";
 
-/**
- * Schema de Usuário
- * Campos básicos para CRUD didático.
- */
 const UserSchema = new mongoose.Schema( // Define o template de objeto que deve ser retornado ao BD
   {
-    name: { type: String, required: false, trim: true },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    pass: {type: String, required: true, trim: true},
-    role: { type: String, enum: ["admin", "user"], default: "user" }
+    name: { 
+      type: String, 
+      required: true, 
+      trim: true 
+    },
+    email: { 
+      type: String, 
+      required: true, 
+      unique: true, 
+      lowercase: true, 
+      trim: true 
+    },
+    pass: { 
+      type: String, 
+      required: false, 
+      trim: true
+    },
+    google_id: {
+      type: String,
+      required: false,
+      unique: true
+    },
+    role: { 
+      type: String, 
+      enum: ["admin", "user"], 
+      default: "user" 
+    }
   },
   { timestamps: true }
 );

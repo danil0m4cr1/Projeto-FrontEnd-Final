@@ -28,22 +28,7 @@
                         </router-link>
                     </p>
                 </form>
-                <div>
-                    <p class="text-center text-white text-[18px]">Ou</p>
-                    <div id="g_id_onload"
-                        data-client_id="504391658440-8dslv576bkbs0ou2h9fiokpoveqk3ruo.apps.googleusercontent.com"
-                        data-callback="googleIntegration">
-                    </div>
-                    <div class="g_id_signin pt-4 flex justify-center"
-                        data-type="standard"
-                        data-size="large"
-                        data-theme="outline"
-                        data-text="signin_with"
-                        data-shape="pill"
-                        data-logo_alignment="left"
-                        data-width="200">
-                    </div>
-                </div>
+                <div ref="googleButton" class="flex justify-center mt-4"></div>
             </div>
         </div>
         <div id="user-info"></div>
@@ -51,11 +36,15 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../services/api';
 import { useUserStore } from '../stores/usuario';
 
 const router = useRouter();
+
+const googleButton = ref(null);
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 let emailInput;
 let passInput;
@@ -65,6 +54,51 @@ const usuario = useUserStore();
 function redirect(){
     router.push('/perfil');
 }
+
+async function googleIntegration(response) {
+    try {
+        const res = await fetch("http://localhost:3000/auth/google", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: response.credential })
+        });
+        console.log(response.credential)
+
+        const data = await res.json();
+
+        if (data.error) {
+            alert("Erro: " + data.error);
+            return;
+        }
+
+    } catch (err) {
+        console.error("Erro ao autenticar:", err);
+        alert("Erro ao autenticar no servidor!");
+    }
+}
+
+onMounted(() => {
+    window.googleIntegration = googleIntegration;
+
+    if (window.google && googleButton.value) {
+
+        window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: googleIntegration,
+        auto_select: false,
+        });
+
+        // Renderiza o botão manualmente
+        window.google.accounts.id.renderButton(googleButton.value, {
+        type: "standard",
+        size: "large",
+        theme: "outline",
+        shape: "pill",
+        text: "signin_with",
+        width: 200,
+        });
+    }
+})
 
 async function checkEmailExists(email, pass){
     try {

@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import api from "../services/api";
-// Importa as bibliotecas
 
 export const useUserStore = defineStore("user", { // Criando um store
   state: () => ({ // States
