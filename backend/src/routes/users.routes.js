@@ -2,39 +2,31 @@ import { Router } from "express";
 import User from "../models/User.js";
 import { OAuth2Client } from "google-auth-library";
 import { config } from "dotenv";
-
 config();
 
 const router = Router();
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(googleClientId);
 
-async function verifyToken(idToken){
-  const ticket = await client.verifyIdToken({
-    idToken,
-    audience: googleClientId
-  });
-  const payload = ticket.getPayload();
-  return payload;
-}
-
 router.post("/auth/google", async (req, res) => {
   const { idToken } = req.body;
 
   try {
-    const userData = await verifyToken(idToken);
+    if(!idToken) return res.status(400).json({ error: "Token não enviado" })
+    
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: googleClientId
+    })
 
-    // Aqui você pode procurar o usuário no banco, criar usuário se não existir, etc
+    const payload = ticket.getPayload();
+    
 
-    // Criar sessão ou token JWT para o seu app
-    // Exemplo: criar sessão
-    req.session.user = {
-      id: userData.sub,
-      email: userData.email,
-      name: userData.name,
-    };
-
-    res.json({ success: true, user: req.session.user });
+    res.json({
+      name: payload.name,
+      email: payload.email,
+      google_id: payload.sub
+    })
   } catch (error) {
     res.status(401).json({ success: false, message: 'Token inválido' });
   }

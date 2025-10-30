@@ -7,6 +7,7 @@ export const useUserStore = defineStore("user", { // Criando um store
     name: "",
     email: "",
     pass: "",
+    google_id: "",
     loading: false,
     error: null
   }),
@@ -19,6 +20,9 @@ export const useUserStore = defineStore("user", { // Criando um store
     },
     setNewPass(newPass){
       this.pass = newPass;
+    },
+    setGoogleId(newGoogle_id){
+      this.google_id = newGoogle_id;
     },
     async addUser(user) { // Req de add users
       this.error = null;

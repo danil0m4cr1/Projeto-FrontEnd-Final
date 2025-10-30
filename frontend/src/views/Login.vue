@@ -57,19 +57,17 @@ function redirect(){
 
 async function googleIntegration(response) {
     try {
-        const res = await fetch("http://localhost:3000/auth/google", {
+        const res = await fetch("http://localhost:3000/api/users/auth/google", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: response.credential })
+            body: JSON.stringify({ idToken: response.credential })
         });
-        console.log(response.credential)
 
         const data = await res.json();
-
-        if (data.error) {
-            alert("Erro: " + data.error);
-            return;
-        }
+        usuario.setNewEmail(data.email);
+        usuario.setNewName(data.name);
+        usuario.setGoogleId(data.google_id);
+        redirect();
 
     } catch (err) {
         console.error("Erro ao autenticar:", err);
@@ -83,19 +81,19 @@ onMounted(() => {
     if (window.google && googleButton.value) {
 
         window.google.accounts.id.initialize({
-        client_id: googleClientId,
-        callback: googleIntegration,
-        auto_select: false,
+            client_id: googleClientId,
+            callback: googleIntegration,
+            auto_select: false,
         });
 
         // Renderiza o botão manualmente
         window.google.accounts.id.renderButton(googleButton.value, {
-        type: "standard",
-        size: "large",
-        theme: "outline",
-        shape: "pill",
-        text: "signin_with",
-        width: 200,
+            type: "standard",
+            size: "large",
+            theme: "outline",
+            shape: "pill",
+            text: "signin_with",
+            width: 200,
         });
     }
 })
@@ -114,7 +112,6 @@ async function checkEmailExists(email, pass){
 
 async function submitForm(){
     const userExists = await checkEmailExists(emailInput, passInput);
-
     if(userExists.exists){
         usuario.setNewEmail(emailInput);
         usuario.setNewName(userExists.name);
